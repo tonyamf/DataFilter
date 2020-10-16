@@ -18,8 +18,7 @@ import org.apache.hadoop.util.GenericOptionsParser;
  *
  */
 public class DublicateCounter {
-    public static class FilterMapper
-            extends Mapper<LongWritable, Text, Text, IntWritable>{
+    public static class FilterMapper extends Mapper<LongWritable, Text, Text, IntWritable>{
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             //POSTED_BY,UNDER_CONSTRUCTION,RERA,BHK_NO.,BHK_OR_RK,SQUARE_FT,READY_TO_MOVE,RESALE,ADDRESS,LONGITUDE,LATITUDE,TARGET(PRICE_IN_LACS)
             String line = value.toString();

@@ -1,7 +1,5 @@
 package DataFilfer;
 
-import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -9,33 +7,40 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-/**
- * @author antonio
- *
- */
-public class FeatureRemover {
+import java.io.IOException;
+
+public class EmptyFeatues {
     public static class FilterMapper extends Mapper<LongWritable, Text, Text, Text> {
         int lines=0;
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             //POSTED_BY,UNDER_CONSTRUCTION,RERA,BHK_NO.,BHK_OR_RK,SQUARE_FT,READY_TO_MOVE,RESALE,ADDRESS,LONGITUDE,LATITUDE,TARGET(PRICE_IN_LACS)
             String line = value.toString();
             String[] words = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-            if(lines == 0){
-                words[5] = "SQUARE_M";
-                words[11] = "TARGET(PRICE_IN_GBP)";
-            }else{
-                Double GBP = (Double.parseDouble(words[11])/94.94)*100000;
-                Double m = Double.parseDouble(words[5])/10.7639104;
-                words[5] = m.toString();
-                words[11] = GBP.toString();
+            int i=0;
+            lines++;
+            while (i<words.length){
+                if(words[i].trim().isEmpty()){
+                    context.write(new Text(String.valueOf(lines)), new Text(String.valueOf(i)) );
+                }i++;
+                //"Vikhroli (East),Lalitpur" 5191
             }
-            String wordOut = words[0] + "," + words[1] + "," + words[2] + "," + words[3] + "," + words[5] + "," + words[6] +
-                    "," + words[7] + "," + words[8] + "," + words[9] + "," + words[10] + "," + words[11] ;
-            context.write(new Text(wordOut), new Text(""));
+
+           /* if(value.toString().equals("POSTED_BY,UNDER_CONSTRUCTION,RERA,BHK_NO.,BHK_OR_RK,SQUARE_FT,READY_TO_MOVE,RESALE,ADDRESS,LONGITUDE,LATITUDE,TARGET(PRICE_IN_LACS)")){
+            }else{
+                if(key.toString().equals("0")){
+                    context.write(new Text("POSTED_BY,UNDER_CONSTRUCTION,RERA,BHK_NO.,BHK_OR_RK,SQUARE_FT,READY_TO_MOVE,RESALE,ADDRESS,LONGITUDE,LATITUDE,TARGET(PRICE_IN_LACS)"), new Text(""));
+                }else{
+                    context.write(value, new Text(""));
+                }
+            }
+            String line = value.toString();
+            String[] words = line.split("\t");
+            int replication = Integer.parseInt(words[1]) - 1;*/
         }
     }
 
@@ -46,12 +51,13 @@ public class FeatureRemover {
             System.err.println("Usage: wordcount <in> [<in>...] <out>");
             System.exit(2);
         }
-        Job job = Job.getInstance(conf, "Removing the feature BHK");
-        job.setJarByClass(FeatureRemover.class);
+        Job job = Job.getInstance(conf, "");
+        job.setJarByClass(EmptyFeatues.class);
         job.setMapperClass(FilterMapper.class);
+        job.setNumReduceTasks(0);
         //job.setCombinerClass(IntSumReducer.class);
         //job.setReducerClass(IntSumReducer.class);
-        job.setNumReduceTasks(0);
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
