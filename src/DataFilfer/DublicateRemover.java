@@ -33,13 +33,7 @@ public class DublicateRemover {
         public void reduce(Text key, Iterable<Text> values,
                            Context context
         ) throws IOException, InterruptedException {
-            int sum = 0;
-            for (Text val : values) {
-                sum++;
-            }
-            if(sum < 2){
-                context.write(key, new Text(""));
-            }
+            context.write(key, new Text(""));
         }
     }
 
@@ -55,7 +49,7 @@ public class DublicateRemover {
         job.setMapperClass(FilterMapper.class);
         job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
-        job.setNumReduceTasks(0);
+        job.setNumReduceTasks(1);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         for (int i = 0; i < otherArgs.length - 1; ++i) {
