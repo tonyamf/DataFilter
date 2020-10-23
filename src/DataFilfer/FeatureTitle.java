@@ -17,7 +17,7 @@ public class FeatureTitle {
         int lines=0;
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             if(lines == 0){
-                context.write(new Text("POSTED_BY,UNDER_CONSTRUCTION,RERA,BHK_NO.,BHK_OR_RK,SQUARE_FT,READY_TO_MOVE,RESALE,ADDRESS,LONGITUDE,LATITUDE,TARGET(PRICE_IN_LACS)"), new Text(""));
+                context.write(new Text("POSTED_BY,UNDER_CONSTRUCTION,RERA,BHK_NO.,SQUARE_M,READY_TO_MOVE,RESALE,ADDRESS,LONGITUDE,LATITUDE,TARGET(PRICE_IN_BGP)"), new Text(""));
             }
             context.write(value, new Text(""));
             lines++;
