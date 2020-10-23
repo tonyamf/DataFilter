@@ -20,8 +20,8 @@ public class Linear {
     public static class FilterMapper extends Mapper<LongWritable, Text, Text, Text> {
         int lines=0;
         int i =0;
-        double[][] x = new double[596][8];
-        double[] y = new  double[596];
+        double[][] x = new double[26005][9];
+        double[] y = new  double[26005];
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             if(i > 0) {
                 String line = value.toString();
@@ -35,9 +35,10 @@ public class Linear {
                 x[lines][5] = Double.parseDouble(words[5]);
                 x[lines][6] = Double.parseDouble(words[6]);
                 x[lines][7] = Double.parseDouble(words[7]);
-                y[lines] = Double.parseDouble(words[8]);
+                x[lines][8] = Double.parseDouble(words[8]);
+                y[lines] = Double.parseDouble(words[9]);
 
-                if (i == 596){
+                if (i == 26004){
                     OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
                     regression.newSampleData(y, x);
 
@@ -47,7 +48,7 @@ public class Linear {
                     double Rto2 = regression.calculateRSquared();
                     regression.calculateResidualSumOfSquares();
 
-                    String betas = beta[0]+", "+beta[1]+", "+beta[2]+", "+beta[3]+", "+beta[4]+", "+beta[5]+", "+beta[6]+", "+beta[7]+", "+beta[8];
+                    String betas = beta[0]+", "+beta[1]+", "+beta[2]+", "+beta[3]+", "+beta[4]+", "+beta[5]+", "+beta[6]+", "+beta[7]+", "+beta[8]+", "+beta[9];
                     context.write(new Text("estimateRegressionParameters"), new Text(betas));
                     context.write(new Text("length"), new Text(String.valueOf(beta.length)));
                     context.write(new Text("AdjustedRSquared"), new Text(String.valueOf(ARto2)));
